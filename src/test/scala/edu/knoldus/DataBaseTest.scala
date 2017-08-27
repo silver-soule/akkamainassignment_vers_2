@@ -25,7 +25,7 @@ class DataBaseTest extends AsyncFunSuite {
   val poor = Account(4L, "Suryansh", "b-213", "pot", 0)
   val invalidUser = Account(5L, "Suryansh", "b-213", "pot", 0)
   db.addAccount(account1)
-  val biller = Biller("food", "panda", 1L, "food", 22L, 1, 1, 0)
+  val biller = Biller("food", "panda", 1L, "29 sep", 22L, 1, 1, 0)
 
 
   test("testUpdateAccountBalance") {
@@ -56,6 +56,13 @@ class DataBaseTest extends AsyncFunSuite {
 
   test("get billers by account number") {
     db.getBillersByAccountnum(2L).map(listOfBillers => assert(listOfBillers.isEmpty))
+  }
+
+  test("get all info from db"){
+    db.getAllInfo().map{
+      data =>
+        assert(data.contains("Neelaksh"))
+    }
   }
 
 }

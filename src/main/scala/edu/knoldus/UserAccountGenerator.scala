@@ -31,11 +31,10 @@ class UserAccountGenerator(database: DataBase) extends Actor with ActorLogging w
 }
 
 object UserAccountGenerator {
-
   def props(dataBase: DataBase): Props = Props(classOf[UserAccountGenerator], dataBase)
 
-  case class AccountCreated(status: Boolean, accountNumber: Long)
+  case class AccountCreated( accountNumber: Long,status: Boolean)
 
-  case class BillerLinkedStatus(status: Boolean, accountNumber: Long)
+  case class BillerLinkedStatus( accountNumber: Long,status: Boolean)
 
 }

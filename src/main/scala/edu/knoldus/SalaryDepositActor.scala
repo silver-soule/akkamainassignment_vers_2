@@ -14,7 +14,6 @@ import scala.util.{Failure, Success}
   */
 class SalaryDepositActor(dataBase: DataBase) extends Actor with ActorLogging {
   var stringToActor: mutable.Map[String, ActorRef] = mutable.Map()
-
   val billers = List("phone", "electricity", "food", "car", "internet")
   var billerMap: Map[String, ActorRef] = Map()
 
@@ -48,15 +47,15 @@ class SalaryDepositActor(dataBase: DataBase) extends Actor with ActorLogging {
       billerRequest.onComplete {
         case Success(billerList) =>
           log.info(s"successful retrieval of billers")
-          if (billerList.foldLeft(0L)((acc,biller)=>acc + biller.amount) < depositStatus.currentBalance) {
+          if (billerList.foldLeft(0L)((acc, biller) => acc + biller.amount) < depositStatus.currentBalance) {
             log.info(s"enough money to paybillers in ${depositStatus.accountNumber}")
             billerList.foreach(
               biller => self.tell((depositStatus.accountNumber, biller), originalSender))
-            originalSender ! TransactionStatus(depositStatus.accountNumber,true)
+            originalSender ! TransactionStatus(depositStatus.accountNumber, true)
           }
-          else{
+          else {
             log.warning(s"not enough balance to pay billers in ${depositStatus.accountNumber}")
-            originalSender ! TransactionStatus(depositStatus.accountNumber,false)
+            originalSender ! TransactionStatus(depositStatus.accountNumber, false)
           }
         case Failure(ex) => log.error(s"failed to pay billers because of : $ex")
       }
@@ -67,7 +66,7 @@ object SalaryDepositActor {
 
   case class Deposit(name: String, accountNum: Long, amount: Long)
 
-  case class TransactionStatus(accountNumber:Long,status:Boolean)
+  case class TransactionStatus(accountNumber: Long, status: Boolean)
 
   case class BillersRequest(accountNum: Long)
 

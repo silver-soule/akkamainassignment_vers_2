@@ -5,14 +5,13 @@ import edu.knoldus.SalaryDepositActor.DepositStatus
 import edu.knoldus.UserAccountGenerator.{AccountCreated, BillerLinkedStatus}
 import edu.knoldus.models.{Account, Biller}
 import scala.collection.parallel.mutable
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by Neelaksh on 19/8/17.
   */
 class DataBase {
-
   val accountNumToAccount: mutable.ParHashMap[Long, Account] = mutable.ParHashMap()
   val userNames: mutable.ParHashSet[String] = mutable.ParHashSet()
   val accountNumToBiller: mutable.ParHashMap[Long, List[Biller]] = mutable.ParHashMap()
@@ -22,20 +21,20 @@ class DataBase {
       if (!userNames.contains(account.userName)) {
         accountNumToAccount += (account.accountNumber -> account)
         userNames += account.userName
-        AccountCreated(true,account.accountNumber)
+        AccountCreated( account.accountNumber,true)
       }
       else {
-        AccountCreated(false,account.accountNumber)
+        AccountCreated(account.accountNumber,false)
       }
     }
   }
 
   def updateAccountBalance(accountNum: Long, balance: Long): Future[DepositStatus] = {
     Future {
-      accountNumToAccount.get(accountNum).fold(DepositStatus(false,accountNum,-1L)) { acc =>
+      accountNumToAccount.get(accountNum).fold(DepositStatus(false, accountNum, -1L)) { acc =>
         val updatedAccountBalance = acc.updateBalance(balance)
         accountNumToAccount += (accountNum -> updatedAccountBalance)
-        DepositStatus(true,accountNum,updatedAccountBalance.balance)
+        DepositStatus(true, accountNum, updatedAccountBalance.balance)
       }
     }
   }
@@ -54,7 +53,7 @@ class DataBase {
 
   def addBillerToAccount(accountnum: Long, biller: Biller): Future[BillerLinkedStatus] = {
     Future {
-      accountNumToAccount.get(accountnum).fold(BillerLinkedStatus(false,accountnum)) { _ =>
+      accountNumToAccount.get(accountnum).fold(BillerLinkedStatus(accountnum,false)) { _ =>
         accountNumToBiller.get(accountnum)
           .fold {
             accountNumToBiller += (accountnum -> List(biller))
@@ -63,7 +62,7 @@ class DataBase {
               val allBillers = biller :: currentBillers
               accountNumToBiller += (accountnum -> allBillers)
           }
-        BillerLinkedStatus(true,accountnum)
+        BillerLinkedStatus(accountnum,true)
       }
     }
   }
@@ -73,19 +72,19 @@ class DataBase {
       val invalidBalance = -1L
       val balance = accountNumToAccount.get(accountnum).fold(invalidBalance) { account => account.balance }
       if (balance > biller.amount) {
-        accountNumToBiller.get(accountnum).fold(PaidStatus(accountnum,biller.billerCategory,false)) {
+        accountNumToBiller.get(accountnum).fold(PaidStatus(accountnum, biller.billerCategory, false)) {
           billers =>
             accountNumToBiller += (accountnum -> (biller :: billers.filter(_.billerCategory != biller.billerCategory)))
-            PaidStatus(accountnum,biller.billerCategory,true)
+            PaidStatus(accountnum, biller.billerCategory, true)
         }
       }
       else {
-        PaidStatus(accountnum,biller.billerCategory,false)
+        PaidStatus(accountnum, biller.billerCategory, false)
       }
     }
   }
 
-  def getAllInfo():Future[String] = {
+  def getAllInfo(): Future[String] = {
     Future {
       accountNumToAccount.mkString
     }

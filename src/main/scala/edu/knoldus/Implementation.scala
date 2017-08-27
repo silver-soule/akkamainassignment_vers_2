@@ -4,9 +4,8 @@ import akka.actor.ActorSystem
 import edu.knoldus.DataLoggerActor.LogAllData
 import edu.knoldus.models.Biller
 import edu.knoldus.service.{SalaryDepositService, UserAccountService}
-
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 /**
   * Created by Neelaksh on 19/8/17.
@@ -18,13 +17,13 @@ object Implementation extends App {
   val dataBase = new DataBase()
   val accountGeneratorActor = actorSystem.actorOf(UserAccountGenerator.props(dataBase))
   val userAccountService = new UserAccountService
-  val status = userAccountService.createAccounts(List(person1,person2),accountGeneratorActor)
+  val status = userAccountService.createAccounts(List(person1, person2), accountGeneratorActor)
   val linkBillerToAccountActor = actorSystem.actorOf(UserAccountGenerator.props(dataBase))
   status.map(
-    status=> status.foreach(println(_))
+    status => status.foreach(println(_))
   )
   val biller = Biller("phone", "panda", 1L, "food", 22L, 1, 1, 0)
-  val linked = userAccountService.linkAccount(1L,biller,linkBillerToAccountActor)
+  val linked = userAccountService.linkAccount(1L, biller, linkBillerToAccountActor)
   val logActor = actorSystem.actorOf(DataLoggerActor.props(dataBase))
   val cancellable =
     actorSystem.scheduler.schedule(
@@ -34,7 +33,7 @@ object Implementation extends App {
       LogAllData)
   linked.map(println(_))
   val salaryDepositActor = actorSystem.actorOf(SalaryDepositActor.props(dataBase))
-  val salaryDepositService =  new SalaryDepositService(salaryDepositActor)
-  val deposited = salaryDepositService.depositSalary("neelaksh",1L,100L)
+  val salaryDepositService = new SalaryDepositService(salaryDepositActor)
+  val deposited = salaryDepositService.depositSalary("neelaksh", 1L, 100L)
   deposited.map(print(_))
 }

@@ -25,15 +25,15 @@ class UserAccountGeneratorTest extends TestKit(ActorSystem("test-system")) with 
   val accountNumber = 1L
   val person1 = List("Neelaksh", "c-138", "silversoul", "100")
   test("create user account") {
-    when(dataBase.addAccount(Account(accountNumber, person1))) thenReturn Future.successful(AccountCreated(true, accountNumber))
+    when(dataBase.addAccount(Account(accountNumber, person1))) thenReturn Future.successful(AccountCreated(accountNumber,true))
     userAccountGenerator ! person1
-    expectMsg(AccountCreated(true, accountNumber))
+    expectMsg(AccountCreated(accountNumber,true))
   }
 
   test("fail to create a new account") {
-    when(dataBase.addAccount(Account(2L, person1))) thenReturn Future.successful(AccountCreated(false, 2L))
+    when(dataBase.addAccount(Account(2L, person1))) thenReturn Future.successful(AccountCreated(2L,false))
     userAccountGenerator ! person1
-    expectMsg(AccountCreated(false, 2L))
+    expectMsg(AccountCreated( 2L,false))
   }
 
 }
