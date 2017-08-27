@@ -1,6 +1,5 @@
 package edu.knoldus
 
-
 import edu.knoldus.BillerPayActor.PaidStatus
 import edu.knoldus.SalaryDepositActor.DepositStatus
 import edu.knoldus.UserAccountGenerator.{AccountCreated, BillerLinkedStatus}
@@ -83,6 +82,12 @@ class DataBase {
       else {
         PaidStatus(accountnum,biller.billerCategory,false)
       }
+    }
+  }
+
+  def getAllInfo():Future[String] = {
+    Future {
+      accountNumToAccount.mkString
     }
   }
 }
