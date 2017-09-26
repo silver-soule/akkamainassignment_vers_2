@@ -5,3 +5,4 @@
 .idea_modules
 .idea_modules/*
 target
+scalastyle*
