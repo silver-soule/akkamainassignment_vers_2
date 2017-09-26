@@ -28,25 +28,25 @@ class SalaryDepositActor(dataBase: DataBase) extends Actor with ActorLogging {
       val originalSender = sender()
       billerMap.get(payBiller.biller.billerCategory) match {
         case None =>
-          log.info(s"Invalid Biller o.O")
+          log.info("Invalid Biller o.O")
           sender() ! PaidStatus(payBiller.accountNumber, payBiller.biller.billerCategory, false)
         case Some(billerActor) =>
-          log.info(s"request to pay biller forwarded")
+          log.info("request to pay biller forwarded")
           billerActor ! (payBiller.accountNumber, payBiller.biller)
       }
 
     case (_: String, accountnum: Long, amount: Long) =>
       val originalSender = sender()
-      log.info(s"sending request to deposit salary")
+      log.info("sending request to deposit salary")
       pipe(dataBase.updateAccountBalance(accountnum, amount).map(data => (data, originalSender))) to self
 
     case (depositStatus: DepositStatus, originalSender: ActorRef) =>
-      log.info(s"sending request to fetch billers")
+      log.info("sending request to fetch billers")
       val billerRequest = dataBase.getBillersByAccountnum(depositStatus.accountNumber)
-      log.info(s"got $billerRequest")
+      log.info("got $billerRequest")
       billerRequest.onComplete {
         case Success(billerList) =>
-          log.info(s"successful retrieval of billers")
+          log.info("successful retrieval of billers")
           if (billerList.foldLeft(0L)((acc, biller) => acc + biller.amount) < depositStatus.currentBalance) {
             log.info(s"enough money to paybillers in ${depositStatus.accountNumber}")
             billerList.foreach(
