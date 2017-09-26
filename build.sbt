@@ -14,4 +14,4 @@ libraryDependencies += "org.mockito" % "mockito-core" % "2.8.47" % "test"
 
 scapegoatVersion := "1.3.0"
 enablePlugins(CopyPasteDetector)
-//hi
+
