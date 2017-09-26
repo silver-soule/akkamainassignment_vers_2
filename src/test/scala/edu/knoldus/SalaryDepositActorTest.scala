@@ -28,7 +28,7 @@ class SalaryDepositActorTest extends TestKit(ActorSystem("test-system", ConfigFa
   val dataBase = mock[DataBase]
   val salaryDepositActor = system.actorOf(SalaryDepositActor.props(dataBase))
   test("check initial log for depositing money to account") {
-    EventFilter.info(message = s"sending request to deposit salary", occurrences = 1) intercept {
+    EventFilter.info(message = "sending request to deposit salary", occurrences = 1) intercept {
       salaryDepositActor ! ("ab",accountNumber, 100L)
     }
 
