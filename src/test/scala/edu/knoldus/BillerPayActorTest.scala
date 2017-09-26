@@ -36,10 +36,10 @@ class BillerPayActorTest extends TestKit(ActorSystem("test-system", ConfigFactor
     }
   }
 
-  test("integration test paying biller"){
+/*  test("integration test paying biller"){
     when(dataBase.payBiller(accountNumber ,updatedBiller)) thenReturn Future.successful(PaidStatus(accountNumber,biller.billerCategory,true))
     EventFilter.info(message = s"$accountNumber paid ${biller.billerCategory} :: status : true", occurrences = 1) intercept {
       payBiller ! (accountNumber, biller)
     }
-  }
+  }*/
 }
